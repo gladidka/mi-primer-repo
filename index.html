@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 en Raya - Juego Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .current-player {
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .cell {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell.x {
+            color: #ff6b6b;
+        }
+
+        .cell.o {
+            color: #4ecdc4;
+        }
+
+        .winning-cell {
+            background: rgba(76, 175, 80, 0.5) !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .score {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+
+        .score-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .winner-announcement {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+            animation: celebrate 0.5s ease-in-out;
+        }
+
+        .draw-announcement {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #ffc107;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .game-mode {
+            margin: 20px 0;
+        }
+
+        .mode-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            margin: 0 5px;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(45deg, #ffeb3b, #ffc107);
+            color: #333;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .cell {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            
+            .game-board {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 3 en Raya</h1>
+        
+        <div class="game-mode">
+            <button class="btn mode-btn active" id="pvpMode">👥 Jugador vs Jugador</button>
+            <button class="btn mode-btn" id="pvcMode">🤖 vs Ordenador</button>
+        </div>
+
+        <div class="score">
+            <div class="score-item">
+                <div>Jugador X</div>
+                <div id="scoreX">0</div>
+            </div>
+            <div class="score-item">
+                <div>Empates</div>
+                <div id="scoreDraw">0</div>
+            </div>
+            <div class="score-item">
+                <div>Jugador O</div>
+                <div id="scoreO">0</div>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div>Turno: <span class="current-player" id="currentPlayer">X</span></div>
+        </div>
+
+        <div id="winnerMessage"></div>
+
+        <div class="game-board" id="gameBoard">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="resetGame">🔄 Nueva Partida</button>
+            <button class="btn" id="resetScore">📊 Resetear Puntuación</button>
+        </div>
+    </div>
+
+    <script>
+        class TicTacToe {
+            constructor() {
+                this.board = Array(9).fill('');
+                this.currentPlayer = 'X';
+                this.gameActive = true;
+                this.isVsComputer = false;
+                this.scores = {
+                    X: 0,
+                    O: 0,
+                    draw: 0
+                };
+                
+                this.winningConditions = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // filas
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columnas
+                    [0, 4, 8], [2, 4, 6] // diagonales
+                ];
+
+                this.initializeGame();
+            }
+
+            initializeGame() {
+                this.bindEvents();
+                this.loadScores();
+                this.updateDisplay();
+            }
+
+            bindEvents() {
+                // Eventos de las celdas
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.addEventListener('click', (e) => this.handleCellClick(e));
+                });
+
+                // Botones de control
+                document.getElementById('resetGame').addEventListener('click', () => this.resetGame());
+                document.getElementById('resetScore').addEventListener('click', () => this.resetScore());
+                
+                // Modos de juego
+                document.getElementById('pvpMode').addEventListener('click', () => this.setGameMode(false));
+                document.getElementById('pvcMode').addEventListener('click', () => this.setGameMode(true));
+            }
+
+            handleCellClick(e) {
+                const clickedCell = e.target;
+                const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+                if (this.board[clickedCellIndex] !== '' || !this.gameActive) {
+                    return;
+                }
+
+                this.makeMove(clickedCellIndex, this.currentPlayer);
+                
+                if (this.gameActive && this.isVsComputer && this.currentPlayer === 'O') {
+                    setTimeout(() => this.computerMove(), 500);
+                }
+            }
+
+            makeMove(index, player) {
+                this.board[index] = player;
+                this.updateCell(index, player);
+                
+                if (this.checkWinner()) {
+                    this.endGame(player);
+                } else if (this.checkDraw()) {
+                    this.endGame('draw');
+                } else {
+                    this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                    this.updateDisplay();
+                }
+            }
+
+            computerMove() {
+                if (!this.gameActive) return;
+
+                // Estrategia de la IA
+                let move = this.getBestMove();
+                this.makeMove(move, 'O');
+            }
+
+            getBestMove() {
+                // 1. Intentar ganar
+                for (let i = 0; i < 9; i++) {
+                    if (this.board[i] === '') {
+                        this.board[i] = 'O';
+                        if (this.checkWinnerForPlayer('O')) {
+                            this.board[i] = '';
+                            return i;
+                        }
+                        this.board[i] = '';
+                    }
+                }
+
+                // 2. Bloquear al jugador
+                for (let i = 0; i < 9; i++) {
+                    if (this.board[i] === '') {
+                        this.board[i] = 'X';
+                        if (this.checkWinnerForPlayer('X')) {
+                            this.board[i] = '';
+                            return i;
+                        }
+                        this.board[i] = '';
+                    }
+                }
+
+                // 3. Tomar el centro si está disponible
+                if (this.board[4] === '') {
+                    return 4;
+                }
+
+                // 4. Tomar una esquina
+                const corners = [0, 2, 6, 8];
+                const availableCorners = corners.filter(i => this.board[i] === '');
+                if (availableCorners.length > 0) {
+                    return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                }
+
+                // 5. Cualquier movimiento disponible
+                const availableMoves = [];
+                for (let i = 0; i < 9; i++) {
+                    if (this.board[i] === '') {
+                        availableMoves.push(i);
+                    }
+                }
+                return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+            }
+
+            checkWinner() {
+                return this.checkWinnerForPlayer(this.currentPlayer);
+            }
+
+            checkWinnerForPlayer(player) {
+                return this.winningConditions.some(condition => {
+                    return condition.every(index => this.board[index] === player);
+                });
+            }
+
+            checkDraw() {
+                return this.board.every(cell => cell !== '');
+            }
+
+            endGame(winner) {
+                this.gameActive = false;
+                
+                if (winner === 'draw') {
+                    this.scores.draw++;
+                    this.showMessage('¡Empate! 🤝', 'draw-announcement');
+                } else {
+                    this.scores[winner]++;
+                    const winnerName = winner === 'X' ? 'Jugador X' : (this.isVsComputer && winner === 'O' ? 'Ordenador' : 'Jugador O');
+                    this.showMessage(`¡${winnerName} gana! 🎉`, 'winner-announcement');
+                    this.highlightWinningCells(winner);
+                }
+                
+                this.saveScores();
+                this.updateScoreDisplay();
+            }
+
+            highlightWinningCells(winner) {
+                this.winningConditions.forEach(condition => {
+                    if (condition.every(index => this.board[index] === winner)) {
+                        condition.forEach(index => {
+                            document.querySelector(`[data-index="${index}"]`).classList.add('winning-cell');
+                        });
+                    }
+                });
+            }
+
+            showMessage(message, className) {
+                const messageDiv = document.getElementById('winnerMessage');
+                messageDiv.innerHTML = `<div class="${className}">${message}</div>`;
+            }
+
+            updateCell(index, player) {
+                const cell = document.querySelector(`[data-index="${index}"]`);
+                cell.textContent = player;
+                cell.classList.add(player.toLowerCase());
+            }
+
+            updateDisplay() {
+                document.getElementById('currentPlayer').textContent = this.currentPlayer;
+                
+                if (this.isVsComputer && this.currentPlayer === 'O' && this.gameActive) {
+                    document.getElementById('currentPlayer').textContent = 'Ordenador (O)';
+                }
+            }
+
+            updateScoreDisplay() {
+                document.getElementById('scoreX').textContent = this.scores.X;
+                document.getElementById('scoreO').textContent = this.scores.O;
+                document.getElementById('scoreDraw').textContent = this.scores.draw;
+            }
+
+            resetGame() {
+                this.board = Array(9).fill('');
+                this.currentPlayer = 'X';
+                this.gameActive = true;
+                
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.textContent = '';
+                    cell.classList.remove('x', 'o', 'winning-cell');
+                });
+                
+                document.getElementById('winnerMessage').innerHTML = '';
+                this.updateDisplay();
+            }
+
+            resetScore() {
+                this.scores = { X: 0, O: 0, draw: 0 };
+                this.updateScoreDisplay();
+                this.saveScores();
+            }
+
+            setGameMode(vsComputer) {
+                this.isVsComputer = vsComputer;
+                this.resetGame();
+                
+                // Actualizar botones
+                document.getElementById('pvpMode').classList.toggle('active', !vsComputer);
+                document.getElementById('pvcMode').classList.toggle('active', vsComputer);
+            }
+
+            saveScores() {
+                localStorage.setItem('ticTacToeScores', JSON.stringify(this.scores));
+            }
+
+            loadScores() {
+                const savedScores = localStorage.getItem('ticTacToeScores');
+                if (savedScores) {
+                    this.scores = JSON.parse(savedScores);
+                    this.updateScoreDisplay();
+                }
+            }
+        }
+
+        // Inicializar el juego cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            new TicTacToe();
+        });
+    </script>
+</body>
+</html>
