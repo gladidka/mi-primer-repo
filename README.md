@@ -6,14 +6,10 @@
 
 ### 🐍 Archivos Python
 
-1. **`hola-mundo.py`** - Mi primer archivo Python
-   - Función de saludo personalizada
-   - Ejemplo básico de programación en Python
-
-2. **`tres_en_raya.py`** - Juego de Tres en Raya completo
-   - Juego interactivo para 2 jugadores
-   - Interfaz de consola fácil de usar
-   - Detección automática de ganador y empates
+**`tres_en_raya.py`** - Juego de Tres en Raya completo
+- Juego interactivo para 2 jugadores
+- Interfaz de consola fácil de usar
+- Detección automática de ganador y empates
 
 ## 🎯 Cómo jugar al Tres en Raya
 
@@ -57,4 +53,4 @@ Este repositorio fue creado como demostración de las capacidades de MCP con Git
 
 ---
 
-*¡Gracias por visitar mi primer repositorio! 🎉*
+*¡Gracias por visitar mi repositorio! 🎉*
