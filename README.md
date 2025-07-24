@@ -4,7 +4,7 @@
 
 ## 🌐 ¡JUEGA ONLINE AHORA!
 
-**🎯 [JUGAR 3 EN RAYA WEB](https://gladidka.github.io/mi-primer-repo/)** ⬅️ ¡HAZ CLIC AQUÍ!
+**🎯 [JUGAR 3 EN RAYA WEB](https://gladidka.github.io/mi-primer-repo/index.html)** ⬅️ ¡HAZ CLIC AQUÍ!
 
 ## 📁 Contenido del Repositorio
 
